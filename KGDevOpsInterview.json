@@ -1,0 +1,59 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+
+    "Description": "KG DevOps interview CF stack",
+
+    "Resources": {
+
+        "InterviewEC2Instance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                
+                "InstanceType": "t2.nano",
+                "ImageId": "ami-047bb4163c506cd98",
+                "SourceDestCheck" : "false",
+                "Tags" : [
+                    {
+                       "Key" : "Name",
+                       "Value" : "Kate Sagay"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Sub": "#!/bin/bash\n yum -y update \n aws sqs get-queue-url --queue-name KGDevOpsInterviewQueue\n"
+                    }
+                }
+            }
+        },
+        "InterviewLoadBalancer" : {
+            "Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties" : {
+                "AvailabilityZones" : [ "eu-west-1a" ],
+                "Instances" : [
+                    { "Ref" : "InterviewEC2Instance" }
+                ],
+                "Listeners" : [ {
+                    "LoadBalancerPort" : "80",
+                    "InstancePort" : "80",
+                    "Protocol" : "HTTP"
+                } ],
+        
+                "HealthCheck" : {
+                    "Target" : "HTTP:80/",
+                    "HealthyThreshold" : "3",
+                    "UnhealthyThreshold" : "5",
+                    "Interval" : "30",
+                    "Timeout" : "5"
+                }
+            }
+        }
+    },
+    "Outputs" : {
+        "EC2instanceID" : {
+          "Description" : "The ID of my EC2 instance",
+          "Value" : { "Ref" : "InterviewEC2Instance" }
+        }
+      }
+    }
+
+

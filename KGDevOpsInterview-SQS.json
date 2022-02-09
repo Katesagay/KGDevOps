@@ -1,0 +1,15 @@
+{
+    "AWSTemplateFormatVersion" : "2010-09-09",
+
+    "Description": "KG DevOps interview CF SQS Que stack",
+
+    "Resources": {
+
+        "SQSQueue": {
+            "Type": "AWS::SQS::Queue",
+            "Properties": {
+                "QueueName": "KGDevOpsInterviewQueue"
+            }
+        }
+}
+}
